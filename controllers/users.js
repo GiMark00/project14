@@ -50,7 +50,8 @@ module.exports.createUser = (req, res) => {
       }
     });
 };
-// $2a$10$8.K0fKmiNyynUANpgSj8H.4LF7QZSq5DFE9jzn2CBEOWqXq4Jud36
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDYzNDA1OTQsImV4cCI6MTYwNjk0NTM5NH0.
+// mwAWK0Yn3q-qGIQYvOBwDaxBzUyKtZfg4rslwfPgFu4
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;

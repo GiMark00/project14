@@ -21,16 +21,28 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .orFail(new Error('NotValidId'))
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные.' });
-      } else if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Карточки нет в базе.' });
+  const cardOwner = req.cookies.aidi;
+  Card.findById(req.params.id)
+    .orFail()
+    .then((card) => {
+      const owner = card.owner._id.toString();
+      if (cardOwner !== owner) {
+        res.status(403).send({ message: 'Нельзя удалить чужую карточку' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка.' });
+        Card.deleteOne(card)
+          .then(() => res.send({ data: card }))
+          .catch((err) => {
+            if (err.name === 'CastError') {
+              res.status(400).send({ message: 'Некорректный ID' });
+            } else {
+              res.status(500).send({ message: 'На сервере произошла ошибка' });
+            }
+          });
       }
+    })
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Карточки нет в базе.' });
+      } else { res.status(500).send({ message: 'На сервере произошла ошибка.' }); }
     });
 };
