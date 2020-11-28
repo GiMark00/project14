@@ -45,13 +45,13 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else if (err.name === 'MongoError') {
+        res.status(409).send({ message: 'Введённая почта уже зарегистрирована' });
       } else {
         res.status(500).send({ message: 'Ошибка сервера' });
       }
     });
 };
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDYzNDA1OTQsImV4cCI6MTYwNjk0NTM5NH0.
-// mwAWK0Yn3q-qGIQYvOBwDaxBzUyKtZfg4rslwfPgFu4
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
@@ -61,16 +61,15 @@ module.exports.login = (req, res) => {
       if (!user) {
         return res.status(401).send({ message: 'Неправильно введена почта' });
       }
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        res.status(401).send({ message: 'Неправильно введён пароль' });
-      }
-      const token = jwt.sign({
-        _id: User._id,
-      }, 'secret-key', { expiresIn: 3600 * 24 * 7 });
-      return res.status(201).send({ message: `Токен: ${token}` });
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          res.status(401).send({ message: 'Неправильно введён пароль' });
+        }
+        const token = jwt.sign({
+          _id: user._id,
+        }, 'secret-key', { expiresIn: 3600 * 24 * 7 });
+        return res.status(201).send({ message: `Токен: ${token}` });
+      });
     })
     .catch((err) => {
       res.status(401).send({ message: `Что-то пошло не так: ${err}` });

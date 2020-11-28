@@ -1,7 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
 const PostUsers = require('./routes/users');
 const PostCards = require('./routes/cards');
 const auth = require('./middlewares/auth');
@@ -19,7 +18,6 @@ mongoose.connect('mongodb://localhost:27017/mydb', {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cookieParser());
 
 app.post('/signup', createUser);
 app.post('/signin', login);

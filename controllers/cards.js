@@ -21,13 +21,13 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const cardOwner = req.cookies.aidi;
+  const currentUserId = req.user._id;
   Card.findById(req.params.id)
     .orFail()
     .then((card) => {
       const owner = card.owner._id.toString();
-      if (cardOwner !== owner) {
-        res.status(403).send({ message: 'Нельзя удалить чужую карточку' });
+      if (currentUserId !== owner) {
+        res.status(403).send({ message: 'Нельзя удалить чужую карточку', currentUserId, owner });
       } else {
         Card.deleteOne(card)
           .then(() => res.send({ data: card }))
