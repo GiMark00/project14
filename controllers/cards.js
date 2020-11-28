@@ -27,7 +27,7 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       const owner = card.owner._id.toString();
       if (currentUserId !== owner) {
-        res.status(403).send({ message: 'Нельзя удалить чужую карточку', currentUserId, owner });
+        res.status(403).send({ message: 'Нельзя удалить чужую карточку' });
       } else {
         Card.deleteOne(card)
           .then(() => res.send({ data: card }))
