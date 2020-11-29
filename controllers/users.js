@@ -43,7 +43,7 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'MongoError') {
+      if (err.message.includes('unique')) {
         res.status(409).send({ message: 'Введённая почта уже зарегистрирована' });
       } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
