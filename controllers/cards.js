@@ -30,19 +30,16 @@ module.exports.deleteCard = (req, res) => {
         res.status(403).send({ message: 'Нельзя удалить чужую карточку' });
       } else {
         Card.deleteOne(card)
-          .then(() => res.send({ data: card }))
-          .catch((err) => {
-            if (err.name === 'CastError') {
-              res.status(400).send({ message: 'Некорректный ID' });
-            } else {
-              res.status(500).send({ message: 'На сервере произошла ошибка' });
-            }
-          });
+          .then(() => res.send({ data: card }));
       }
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Карточки нет в базе.' });
-      } else { res.status(500).send({ message: 'На сервере произошла ошибка.' }); }
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный ID' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка.' });
+      }
     });
 };

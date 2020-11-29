@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
+const mongooseHidden = require('mongoose-hidden')();
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -29,10 +30,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+    hide: true,
     match: /\w{10,}/i,
   },
 });
 
 userSchema.plugin(uniqueValidator);
+userSchema.plugin(mongooseHidden);
 
 module.exports = mongoose.model('user', userSchema);
